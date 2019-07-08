@@ -1,4 +1,0 @@
-name: Books
-main: co.burokku.books.BooksPlugin
-version: 1.0-SNAPSHOT
-authors: [dylan, colin]
