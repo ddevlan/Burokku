@@ -1,11 +1,15 @@
 package co.burokku.books.npc;
 
+import co.burokku.books.npc.packet.CustomNPCPacket;
+import co.burokku.books.util.PlayerUtil;
+import co.burokku.books.util.ReflectionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -210,6 +214,17 @@ public class CustomNPC implements ICustomNPC {
     @Override
     public void move(Location location) {
 
+    }
+
+    @Override
+    public void sendPacket(CustomNPCPacket packet) {
+        for (Player player : PlayerUtil.getPlayersFromUUIDs(visableIds)) {
+            try {
+                ReflectionUtil.sendPacket(player, packet.getPacketClass());
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

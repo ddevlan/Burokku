@@ -1,6 +1,7 @@
 package co.burokku.books.pmf;
 
 import co.burokku.books.pmf.packets.bungee.PacketForward;
+import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -239,6 +240,10 @@ public abstract class PacketManager {
      */
     public void sendPacket(PacketPlayer packetPlayer, StandardPacket packet){
         sendPacket(packetPlayer, packet, false);
+    }
+
+    public void sendPacketToAll(StandardPacket packet) {
+        Bukkit.getOnlinePlayers().forEach(o -> sendPacket(new PacketPlayer(o), packet));
     }
 
     /**

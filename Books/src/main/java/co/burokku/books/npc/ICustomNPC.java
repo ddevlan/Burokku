@@ -1,5 +1,6 @@
 package co.burokku.books.npc;
 
+import co.burokku.books.npc.packet.CustomNPCPacket;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -56,5 +57,7 @@ public interface ICustomNPC {
     void jump();
     void damage();
     void move(Location location);
+
+    void sendPacket(CustomNPCPacket packet);
 
 }

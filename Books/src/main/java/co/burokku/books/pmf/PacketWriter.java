@@ -1,8 +1,14 @@
 package co.burokku.books.pmf;
 
+import com.google.common.base.Charsets;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by iKeirNez on 12/12/13.
@@ -34,70 +40,98 @@ public class PacketWriter {
         return byteArrayOutputStream.toByteArray();
     }
 
-    // DataOutputStream methods
+    //  DataOutputStream methods
 
-    public void write(int v) throws IOException {
-        dataOutputStream.write(v);
+    public void write(int i) throws IOException {
+        dataOutputStream.write(i);
     }
 
-    public void write(byte b[], int off, int len) throws IOException {
-        dataOutputStream.write(b, off, len);
+    public void write(byte[] bytes) throws IOException {
+        dataOutputStream.write(bytes);
     }
 
-    public void write(byte[] b) throws IOException {
-        dataOutputStream.write(b);
+    public void writeShort(short value) throws IOException {
+        dataOutputStream.writeShort(value);
     }
 
-    public void flush() throws IOException {
-        dataOutputStream.flush();
+    public void writeUTF(String value) throws IOException {
+        dataOutputStream.writeUTF(value);
     }
 
-    public void writeBoolean(boolean v) throws IOException {
-        dataOutputStream.writeBoolean(v);
+    public byte[] getVarInt(int value) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        while ((value & -128) != 0) {
+            out.write(value & 127 | 128);
+            value >>>= 7;
+        }
+
+        out.write(value);
+        out.close();
+
+        return out.toByteArray();
     }
 
-    public void writeByte(int v) throws IOException {
-        dataOutputStream.writeByte(v);
+    public byte[] getStringBytes(String value) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        byte[] data = value.getBytes(StandardCharsets.UTF_8);
+        out.write(getVarInt(data.length));
+        out.write(data);
+        out.close();
+
+        return out.toByteArray();
+    }
+
+    public void writeInt(int value) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(outputStream);
+
+        out.writeInt(value);
+
+        out.close();
+        outputStream.close();
+
+        dataOutputStream.write(outputStream.toByteArray());
+    }
+
+    public void writeString(String value) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        byte[] data = value.getBytes(StandardCharsets.UTF_8);
+        out.write(getVarInt(data.length));
+        out.write(data);
+        out.close();
+
+        dataOutputStream.write(out.toByteArray());
+    }
+
+    public void writeBoolean(boolean value) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(outputStream);
+
+        out.writeBoolean(value);
+
+        out.close();
+        outputStream.close();
+
+        dataOutputStream.write(outputStream.toByteArray());
     }
 
     public void writeShort(int v) throws IOException {
-        dataOutputStream.writeShort(v);
-    }
-
-    public void writeChar(int v) throws IOException {
-        dataOutputStream.writeChar(v);
-    }
-
-    public void writeInt(int v) throws IOException {
         dataOutputStream.writeInt(v);
     }
 
-    public void writeLong(long v) throws IOException {
-        dataOutputStream.writeLong(v);
-    }
+    public void writeStrings(String[] tags) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-    public void writeFloat(float v) throws IOException {
-        dataOutputStream.writeFloat(v);
-    }
+        for (String tag : tags) {
+            byte[] data = tag.getBytes(StandardCharsets.UTF_8);
+            out.write(getVarInt(data.length));
+            out.write(data);
+        }
+        out.close();
 
-    public void writeDouble(double v) throws IOException {
-        dataOutputStream.writeDouble(v);
+        dataOutputStream.write(out.toByteArray());
     }
-
-    public void writeBytes(String s) throws IOException {
-        dataOutputStream.writeBytes(s);
-    }
-
-    public void writeChars(String s) throws IOException {
-        dataOutputStream.writeChars(s);
-    }
-
-    public void writeUTF(String str) throws IOException {
-        dataOutputStream.writeUTF(str);
-    }
-
-    public int size() {
-        return dataOutputStream.size();
-    }
-
 }

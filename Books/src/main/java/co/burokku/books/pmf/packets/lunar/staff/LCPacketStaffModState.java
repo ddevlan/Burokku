@@ -26,11 +26,11 @@ public class LCPacketStaffModState extends LCPacket {
     @Override
     public PacketWriter write() throws IOException {
         PacketWriter packetWriter = new PacketWriter(this);
-        packetWriter.writeByte(packetId);
-        for (char c : mod.toCharArray()) {
-            packetWriter.writeChar(c);
-        }
+
+        packetWriter.write(packetId);
+        packetWriter.writeString(mod);
         packetWriter.writeBoolean(state);
+
         return packetWriter;
     }
 }
